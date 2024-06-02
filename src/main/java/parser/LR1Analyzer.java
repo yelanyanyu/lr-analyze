@@ -16,11 +16,6 @@ public class LR1Analyzer extends Analyzer {
     }
 
     @Override
-    protected void initWenfa2() {
-
-    }
-
-    @Override
     public void parse(String input) {
 
     }
@@ -39,6 +34,4 @@ public class LR1Analyzer extends Analyzer {
     protected List<String> applyClosureRule(char symbolAfterDot, Set<String> existingItems) {
         return null;
     }
-
-
 }

@@ -15,23 +15,6 @@ public class LR0Analyzer extends Analyzer {
     }
 
     @Override
-    protected void initWenfa2() {
-        // 清空wenfa2以防重复调用initWenfa2时累积数据
-        wenfa2.clear();
-
-        // 遍历所有文法规则
-        for (Map.Entry<Integer, String> entry : wenfa.entrySet()) {
-            String production = entry.getValue();
-            char left = CompilerUtils.getLeft(production).charAt(0);
-            String right = CompilerUtils.getRight(production);
-
-            // 将右侧产生式添加到对应非终结符的列表中
-            List<String> productions = wenfa2.computeIfAbsent(left, k -> new ArrayList<>());
-            productions.add(right);
-        }
-    }
-
-    @Override
     public void parse(String input) {
         // 初始化项目集和状态
         List<LR0State> states = new ArrayList<>();

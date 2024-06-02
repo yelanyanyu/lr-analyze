@@ -1,3 +1,5 @@
+import parser.Analyzer;
+import parser.LR0Analyzer;
 import pojo.LR0State;
 import util.CompilerUtils;
 import util.FirstBuilder;
@@ -15,40 +17,23 @@ public class Main {
     final static Wr w = new Wr();
     final static HashMap<Integer, List<String>> initProjects = new HashMap<>();
     final static HashMap<Integer, String> wenfa = new HashMap<>();
-    final static HashMap<Character, List<String>> wenfa2 = new HashMap<>();
-    static FirstBuilder firstBuilder;
+    static Analyzer lr0;
+    static Analyzer lr1;
     static String string;
     static int accept;
 
     static void input() {
         string = r.next();
-        int idx1 = 0, idx2 = 0;
-        List<String> alist = new ArrayList<>();
-        alist.add("X->.S");
-
-        wenfa2.put('X', Arrays.asList("S"));
-
-        initProjects.put(idx1++, alist);
+        int idx1 = 0;
         while (r.hasNext()) {
             String next = r.next();
-            wenfa.put(idx2++, next);
             if (!next.contains("->")) {
                 throw new RuntimeException("incorrect wenfa");
             }
-            List<String> list = new ArrayList<>();
-            list.add(CompilerUtils.getLeft(next) + "->." + CompilerUtils.getRight(next));
-            initProjects.put(idx1++, list);
+            wenfa.put(idx1++, next);
         }
 
-        wenfa.forEach((i, production) -> {
-            char c = CompilerUtils.getLeft(production).charAt(0);
-            String right = CompilerUtils.getRight(production);
-
-            List<String> list = wenfa2.computeIfAbsent(c, k -> new ArrayList<>());
-            list.add(right);
-        });
-
-        firstBuilder = new FirstBuilder(wenfa2);
+        lr0 = new LR0Analyzer(wenfa);
     }
 
     static void printStates(List<LR0State> states) {
@@ -76,60 +61,60 @@ public class Main {
 
     public static void main(String[] args) {
         input();
-        w.println("project:");
-        for (int i = 0; i < initProjects.size(); i++) {
-            w.println(initProjects.get(i));
-        }
-
-        // 记录不同的项目集
-        List<LR0State> states = new ArrayList<>();
-        // 反向索引, 可以通过项目集找到对应的状态
-        HashMap<List<String>, Integer> stateMap = new HashMap<>();
-        int stateCount = 0;
-
-        LR0State startState = new LR0State();
-        startState.id = stateCount++;
-        startState.projects = closure(initProjects.get(0));
-        states.add(startState);
-        stateMap.put(startState.projects, startState.id);
-
-        // 构建 DFA
-        for (int i = 0; i < states.size(); i++) {
-            LR0State state = states.get(i);
-            HashMap<Character, List<String>> transitions = gotoFunction(state.projects);
-
-            for (Map.Entry<Character, List<String>> entry : transitions.entrySet()) {
-                Character symbol = entry.getKey();
-                List<String> items = entry.getValue();
-                List<String> newStateProject = closure(items);
-                if (!stateMap.containsKey(newStateProject)) {
-                    LR0State newState = new LR0State();
-                    newState.id = stateCount++;
-                    newState.projects = newStateProject;
-                    states.add(newState);
-                    stateMap.put(newStateProject, newState.id);
-                    state.transitions.put(symbol, newState.id);
-                } else {
-                    state.transitions.put(symbol, stateMap.get(newStateProject));
-                }
-            }
-            state.setAction();
-        }
-
-        w.println("==========================================");
-        // 判断是否为 LR(0) 文法
-        boolean lr0 = isLR0(states);
-        if (lr0) {
-            w.println("是 LR(0) 文法");
-        } else {
-            w.println("不是 LR(0) 文法");
-        }
-        w.println("==========================================");
-        // 打印LR(0)分析表
-        printStates(states);
-        w.println("====================================");
-        // 字符串分析
-        analyzeString(states);
+//        w.println("project:");
+//        for (int i = 0; i < initProjects.size(); i++) {
+//            w.println(initProjects.get(i));
+//        }
+//
+//        // 记录不同的项目集
+//        List<LR0State> states = new ArrayList<>();
+//        // 反向索引, 可以通过项目集找到对应的状态
+//        HashMap<List<String>, Integer> stateMap = new HashMap<>();
+//        int stateCount = 0;
+//
+//        LR0State startState = new LR0State();
+//        startState.id = stateCount++;
+//        startState.projects = closure(initProjects.get(0));
+//        states.add(startState);
+//        stateMap.put(startState.projects, startState.id);
+//
+//        // 构建 DFA
+//        for (int i = 0; i < states.size(); i++) {
+//            LR0State state = states.get(i);
+//            HashMap<Character, List<String>> transitions = gotoFunction(state.projects);
+//
+//            for (Map.Entry<Character, List<String>> entry : transitions.entrySet()) {
+//                Character symbol = entry.getKey();
+//                List<String> items = entry.getValue();
+//                List<String> newStateProject = closure(items);
+//                if (!stateMap.containsKey(newStateProject)) {
+//                    LR0State newState = new LR0State();
+//                    newState.id = stateCount++;
+//                    newState.projects = newStateProject;
+//                    states.add(newState);
+//                    stateMap.put(newStateProject, newState.id);
+//                    state.transitions.put(symbol, newState.id);
+//                } else {
+//                    state.transitions.put(symbol, stateMap.get(newStateProject));
+//                }
+//            }
+//            state.setAction();
+//        }
+//
+//        w.println("==========================================");
+//        // 判断是否为 LR(0) 文法
+//        boolean lr0 = isLR0(states);
+//        if (lr0) {
+//            w.println("是 LR(0) 文法");
+//        } else {
+//            w.println("不是 LR(0) 文法");
+//        }
+//        w.println("==========================================");
+//        // 打印LR(0)分析表
+//        printStates(states);
+//        w.println("====================================");
+//        // 字符串分析
+//        analyzeString(states);
         w.close();
     }
 

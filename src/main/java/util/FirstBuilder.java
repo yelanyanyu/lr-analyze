@@ -15,9 +15,9 @@ public class FirstBuilder {
     /**
      * 文法 S->ab
      */
-    private HashMap<Character, List<String>> wenfa;
+    private Map<Character, List<String>> wenfa;
 
-    public FirstBuilder(HashMap<Character, List<String>> wenfa) {
+    public FirstBuilder(Map<Character, List<String>> wenfa) {
         this.wenfa = wenfa;
     }
 
@@ -27,12 +27,11 @@ public class FirstBuilder {
      * @param right "aAb"
      * @return .
      */
-    public HashSet<Character> build(String right) {
-        HashSet<Character> res = new HashSet<>();
-        for (int i = 0; i < right.length(); i++) {
-            char ch = right.charAt(i);
-            res.addAll(innerBuild(ch));
-        }
+    public Set<Character> build(String right) {
+        Set<Character> res = new HashSet<>();
+        char ch = right.charAt(0);
+        // TODO: 递归错误
+        res.addAll(innerBuild(ch));
         return res;
     }
 
@@ -42,21 +41,20 @@ public class FirstBuilder {
      * @param ch 非终结符
      * @return .
      */
-    private HashSet<Character> innerBuild(char ch) {
-        HashSet<Character> res = new HashSet<>();
-        if (CompilerUtils.isTerminal(ch)) {
-            res.add(ch);
-            return res;
-        }
-
-        // ch 是非终结符
+    private Set<Character> innerBuild(char ch) {
+        Set<Character> res = new HashSet<>();
         /*
-        1. 找到 ch -> 形式的所有产生式;
-        2.
+            1. 找到 ch -> 形式的所有产生式;
+            2.
          */
         List<String> productions = wenfa.get(ch);
         if (productions != null) {
             for (String production : productions) {
+                char c = CompilerUtils.getRight(production).charAt(0);
+                if (CompilerUtils.isTerminal(c)) {
+                    res.add(c);
+                    continue;
+                }
                 if (production.isEmpty()) {
                     break;
                 }

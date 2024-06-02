@@ -1,6 +1,7 @@
 package parser;
 
 import pojo.LRState;
+import util.CompilerUtils;
 import util.FirstBuilder;
 
 import java.util.*;
@@ -18,14 +19,25 @@ public abstract class Analyzer {
 
     public Analyzer(Map<Integer, String> wenfa) {
         this.wenfa = wenfa;
-        this.states = new ArrayList<>();
         this.wenfa2 = new HashMap<>();
-        // init initProjects
+        wenfa.forEach((i, production) -> {
+            char c = CompilerUtils.getLeft(production).charAt(0);
+            String right = CompilerUtils.getRight(production);
 
-        initWenfa2();
+            // init wenfa2
+            List<String> list = wenfa2.computeIfAbsent(c, k -> new ArrayList<>());
+            list.add(right);
+
+            // init initProjects
+            List<String> alist = initProjects.computeIfAbsent(i, k -> new ArrayList<>());
+            alist.add(CompilerUtils.getLeft(production) + "->." + right);
+        });
+
+        firstBuilder = new FirstBuilder(wenfa2);
+        System.out.println(wenfa2);
+        System.out.println(initProjects);
+        System.out.println(firstBuilder.build("ABC"));
     }
-
-    protected abstract void initWenfa2();
 
     public abstract void parse(String input);
 
