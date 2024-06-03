@@ -12,11 +12,13 @@ import java.util.*;
  */
 public abstract class Analyzer {
     protected List<LRState> states;
+    /**
+     * 初始项目集闭包 S0
+     */
     protected HashMap<Integer, List<String>> initProjects = new HashMap<>();
     protected Map<Integer, String> wenfa;
     protected Map<Character, List<String>> wenfa2;
     protected FirstBuilder firstBuilder;
-
     public Analyzer(Map<Integer, String> wenfa) {
         this.wenfa = wenfa;
         this.wenfa2 = new HashMap<>();
@@ -34,9 +36,14 @@ public abstract class Analyzer {
         });
 
         firstBuilder = new FirstBuilder(wenfa2);
-        System.out.println(wenfa2);
-        System.out.println(initProjects);
-        System.out.println(firstBuilder.build("ABC"));
+    }
+
+    public List<LRState> getStates() {
+        return states;
+    }
+
+    public HashMap<Integer, List<String>> getInitProjects() {
+        return initProjects;
     }
 
     public abstract void parse(String input);
@@ -47,7 +54,7 @@ public abstract class Analyzer {
      * @param item .
      * @return .
      */
-    protected abstract List<String> processItem(String item);
+    protected abstract List<String> processItem(String item, int dosPos);
 
     /**
      * gotoFunction template
@@ -63,7 +70,7 @@ public abstract class Analyzer {
             int dotPos = item.indexOf('.');
             if (dotPos != -1 && dotPos + 1 < item.length()) {
                 char afterDot = item.charAt(dotPos + 1);
-                List<String> newItemList = processItem(item);
+                List<String> newItemList = processItem(item, dotPos);
 
                 List<String> list = transitions.computeIfAbsent(afterDot, k -> new ArrayList<>());
                 list.addAll(newItemList);

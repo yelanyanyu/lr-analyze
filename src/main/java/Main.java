@@ -1,6 +1,7 @@
 import parser.Analyzer;
 import parser.LR0Analyzer;
 import pojo.LR0State;
+import pojo.LRState;
 import util.CompilerUtils;
 import util.FirstBuilder;
 import util.Re;
@@ -15,7 +16,7 @@ import java.util.*;
 public class Main {
     final static Re r = new Re();
     final static Wr w = new Wr();
-    final static HashMap<Integer, List<String>> initProjects = new HashMap<>();
+    static HashMap<Integer, List<String>> initProjects = new HashMap<>();
     final static HashMap<Integer, String> wenfa = new HashMap<>();
     static Analyzer lr0;
     static Analyzer lr1;
@@ -36,8 +37,8 @@ public class Main {
         lr0 = new LR0Analyzer(wenfa);
     }
 
-    static void printStates(List<LR0State> states) {
-        for (LR0State state : states) {
+    static void printStates(List<LRState> states) {
+        for (LRState state : states) {
             w.println("state " + state.id + " ACTION: " + state.action);
             accept = state.id;
             for (String project : state.projects) {
@@ -61,60 +62,15 @@ public class Main {
 
     public static void main(String[] args) {
         input();
-//        w.println("project:");
-//        for (int i = 0; i < initProjects.size(); i++) {
-//            w.println(initProjects.get(i));
-//        }
-//
-//        // 记录不同的项目集
-//        List<LR0State> states = new ArrayList<>();
-//        // 反向索引, 可以通过项目集找到对应的状态
-//        HashMap<List<String>, Integer> stateMap = new HashMap<>();
-//        int stateCount = 0;
-//
-//        LR0State startState = new LR0State();
-//        startState.id = stateCount++;
-//        startState.projects = closure(initProjects.get(0));
-//        states.add(startState);
-//        stateMap.put(startState.projects, startState.id);
-//
-//        // 构建 DFA
-//        for (int i = 0; i < states.size(); i++) {
-//            LR0State state = states.get(i);
-//            HashMap<Character, List<String>> transitions = gotoFunction(state.projects);
-//
-//            for (Map.Entry<Character, List<String>> entry : transitions.entrySet()) {
-//                Character symbol = entry.getKey();
-//                List<String> items = entry.getValue();
-//                List<String> newStateProject = closure(items);
-//                if (!stateMap.containsKey(newStateProject)) {
-//                    LR0State newState = new LR0State();
-//                    newState.id = stateCount++;
-//                    newState.projects = newStateProject;
-//                    states.add(newState);
-//                    stateMap.put(newStateProject, newState.id);
-//                    state.transitions.put(symbol, newState.id);
-//                } else {
-//                    state.transitions.put(symbol, stateMap.get(newStateProject));
-//                }
-//            }
-//            state.setAction();
-//        }
-//
-//        w.println("==========================================");
-//        // 判断是否为 LR(0) 文法
-//        boolean lr0 = isLR0(states);
-//        if (lr0) {
-//            w.println("是 LR(0) 文法");
-//        } else {
-//            w.println("不是 LR(0) 文法");
-//        }
-//        w.println("==========================================");
-//        // 打印LR(0)分析表
-//        printStates(states);
-//        w.println("====================================");
-//        // 字符串分析
-//        analyzeString(states);
+        lr0.parse(string);
+        initProjects = lr0.getInitProjects();
+        List<LRState> states = lr0.getStates();
+        w.println("project:");
+        for (int i = 0; i < initProjects.size(); i++) {
+            w.println(initProjects.get(i));
+        }
+
+        printStates(states);
         w.close();
     }
 

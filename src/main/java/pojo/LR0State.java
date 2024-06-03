@@ -9,11 +9,6 @@ import java.util.List;
  * @version 1.0
  */
 public class LR0State extends LRState {
-    public int id;
-    public List<String> projects = new ArrayList<>();
-    public HashMap<Character, Integer> transitions = new HashMap<>();
-    public String action;
-
     /**
      * 获取移进项目：圆点后是终结符的项目
      */

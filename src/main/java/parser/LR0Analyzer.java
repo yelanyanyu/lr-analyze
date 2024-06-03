@@ -1,6 +1,7 @@
 package parser;
 
 import pojo.LR0State;
+import pojo.LRState;
 import util.CompilerUtils;
 
 import java.util.*;
@@ -17,20 +18,20 @@ public class LR0Analyzer extends Analyzer {
     @Override
     public void parse(String input) {
         // 初始化项目集和状态
-        List<LR0State> states = new ArrayList<>();
+        List<LRState> states = new ArrayList<>();
         HashMap<List<String>, Integer> stateMap = new HashMap<>();
         int stateCount = 0;
 
         // 创建初始状态
         LR0State startState = new LR0State();
         startState.id = stateCount++;
-        startState.projects = closure(initProjects.get(0)); // 初始项目集闭包
+        startState.projects = closure(initProjects.get(0));
         states.add(startState);
         stateMap.put(startState.projects, startState.id);
 
         // 构建DFA
         for (int i = 0; i < states.size(); i++) {
-            LR0State state = states.get(i);
+            LR0State state = (LR0State) states.get(i);
             HashMap<Character, List<String>> transitions = gotoFunction(state.projects);
 
             for (Map.Entry<Character, List<String>> entry : transitions.entrySet()) {
@@ -51,21 +52,24 @@ public class LR0Analyzer extends Analyzer {
             state.setAction();
         }
 
-        // 打印状态和分析表
-//        printStates(states);
-
-        // 字符串分析
-//        analyzeString(states);
+        this.states = states;
     }
 
     @Override
-    protected List<String> processItem(String item) {
-        return null;
+    protected List<String> processItem(String item, int dosPos) {
+        List<String> res = new ArrayList<>();
+        String newItem = item;
+        newItem = CompilerUtils.swapString(newItem, dosPos, dosPos + 1);
+
+        res.add(newItem);
+        return res;
     }
 
     @Override
     protected void postProcessTransitions(HashMap<Character, List<String>> transitions) {
-
+        transitions.forEach((ch, list) -> {
+            CompilerUtils.distinctList(list);
+        });
     }
 
     @Override

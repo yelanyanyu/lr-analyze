@@ -30,7 +30,6 @@ public class FirstBuilder {
     public Set<Character> build(String right) {
         Set<Character> res = new HashSet<>();
         char ch = right.charAt(0);
-        // TODO: 递归错误
         res.addAll(innerBuild(ch));
         return res;
     }

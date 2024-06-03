@@ -21,7 +21,7 @@ public class LR1Analyzer extends Analyzer {
     }
 
     @Override
-    protected List<String> processItem(String item) {
+    protected List<String> processItem(String item, int dosPos) {
         return null;
     }
 

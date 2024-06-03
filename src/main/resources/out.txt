@@ -1,0 +1,50 @@
+project:
+[X->.S, S->.BB, B->.aB, B->.b]
+[S->.BB]
+[B->.aB]
+[B->.b]
+state 0 ACTION: 移进
+	 X->.S
+	 S->.BB
+	 B->.aB
+	 B->.b
+----------------------
+	 a -> State 1 ACTION
+	 b -> State 2 ACTION
+	 B -> State 3 GOTO
+	 S -> State 4 GOTO
+
+state 1 ACTION: 移进
+	 B->a.B
+	 B->.aB
+	 B->.b
+----------------------
+	 a -> State 1 ACTION
+	 b -> State 2 ACTION
+	 B -> State 5 GOTO
+
+state 2 ACTION: 规约
+	 B->b.
+----------------------
+
+state 3 ACTION: 移进
+	 S->B.B
+	 B->.aB
+	 B->.b
+----------------------
+	 a -> State 1 ACTION
+	 b -> State 2 ACTION
+	 B -> State 6 GOTO
+
+state 4 ACTION: acc
+	 X->S.
+----------------------
+
+state 5 ACTION: 规约
+	 B->aB.
+----------------------
+
+state 6 ACTION: 规约
+	 S->BB.
+----------------------
+

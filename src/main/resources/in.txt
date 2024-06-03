@@ -1,7 +1,5 @@
 bccd#
-S->aA
-S->bB
-A->cA
-A->d
-B->cB
-B->d
+X->S
+S->BB
+B->aB
+B->b
